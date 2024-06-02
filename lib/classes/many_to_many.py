@@ -13,10 +13,10 @@ class Article:
 
     @title.setter
     def title(self, title):
-        self._title = self.validate_name(title)
+        self._title = self.validate_title(title)
 
     @staticmethod
-    def validate_name(title):
+    def validate_title(title):
         if not isinstance(title, str):
             raise ValueError("Title must be a string")
         if len(title) < 5 or len(title) > 50:
@@ -59,9 +59,12 @@ class Author:
         return topics if topics else None
 
 class Magazine:
+    all_magazines = []  # Class-level attribute to track all created Magazine instances
+
     def __init__(self, name, category):
         self.name = name
         self.category = category
+        Magazine.all_magazines.append(self)  # Append the new Magazine instance to the all_magazines list
 
     @property
     def name(self):
@@ -106,3 +109,9 @@ class Magazine:
         for article in self.articles():
             author_count[article.author] += 1
         return [author for author, count in author_count.items() if count > 2] or None
+
+    @classmethod
+    def top_publisher(cls):
+        if not cls.all_magazines:
+            return None
+        return max(cls.all_magazines, key=lambda mag: len(mag.articles()), default=None)
